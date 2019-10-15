@@ -7,7 +7,7 @@
 #include <map>
 
 
-namespace dt{
+namespace km{
 
 
 // map from class ids to class names
@@ -95,7 +95,7 @@ struct cls_sample {
 
 
 template <typename feat_t, std::size_t n_feat>
-std::ostream & operator<< (std::ostream & out, dt::cls_sample<feat_t, n_feat> & sample){
+std::ostream & operator<< (std::ostream & out, km::cls_sample<feat_t, n_feat> & sample){
     for(auto i = 0lu; i < n_feat; ++i){
         out << std::fixed << std::setw(6) << std::setprecision(2) << sample[i];
     }

@@ -10,7 +10,7 @@
 #include "cls_sample.hpp"
 
 
-namespace dt {
+namespace km {
 
 
 /*
