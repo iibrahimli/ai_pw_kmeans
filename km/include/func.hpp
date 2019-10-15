@@ -8,6 +8,7 @@
 #include <vector>
 #include <cmath>
 #include <algorithm>
+
 #include "cls_sample.hpp"
 #include "parser.hpp"
 
@@ -37,7 +38,7 @@ std::ostream & operator << (std::ostream & out, std::vector<T> vec){
     specialization for printing a dataset
 */
 template <typename feat_t, std::size_t n_feat>
-std::ostream & operator << (std::ostream & out, std::vector<dt::cls_sample<feat_t, n_feat>> vec){
+std::ostream & operator << (std::ostream & out, std::vector<km::cls_sample<feat_t, n_feat>> vec){
     
     for(auto i = 0ul; i < vec.size(); ++i){
         out << vec[i];
@@ -52,7 +53,7 @@ std::ostream & operator << (std::ostream & out, std::vector<dt::cls_sample<feat_
     number of labels for a dataset (max_label_id + 1)
 */
 template <typename feat_t, std::size_t n_feat>
-unsigned int num_labels(const std::vector<dt::cls_sample<feat_t, n_feat>> & dataset){
+unsigned int num_labels(const std::vector<km::cls_sample<feat_t, n_feat>> & dataset){
     
     unsigned int num_lbl = 0;
 
@@ -70,7 +71,7 @@ unsigned int num_labels(const std::vector<dt::cls_sample<feat_t, n_feat>> & data
     ASSUMING THE GROUP IDS ARE CONTIGUOUS & START FROM 0
 */
 template <typename feat_t, std::size_t n_feat>
-unsigned int num_groups(const std::vector<dt::cls_sample<feat_t, n_feat>> & dataset, std::size_t i){
+unsigned int num_groups(const std::vector<km::cls_sample<feat_t, n_feat>> & dataset, std::size_t i){
     
     unsigned int num_grp = 0;
 
@@ -87,7 +88,7 @@ unsigned int num_groups(const std::vector<dt::cls_sample<feat_t, n_feat>> & data
     returns a vector of number of samples belonging to each label
 */
 template <typename feat_t, std::size_t n_feat>
-std::vector<unsigned int> num_per_label(const std::vector<dt::cls_sample<feat_t, n_feat>> & dataset){
+std::vector<unsigned int> num_per_label(const std::vector<km::cls_sample<feat_t, n_feat>> & dataset){
     
     unsigned int num_lbl = num_labels(dataset);
     std::vector<unsigned int> lbl_count(num_lbl, 0);
@@ -104,7 +105,7 @@ std::vector<unsigned int> num_per_label(const std::vector<dt::cls_sample<feat_t,
     returns a vector of number of samples belonging to each group
 */
 template <typename feat_t, std::size_t n_feat>
-std::vector<unsigned int> num_per_group(const std::vector<dt::cls_sample<feat_t, n_feat>> & dataset, std::size_t i_feat){
+std::vector<unsigned int> num_per_group(const std::vector<km::cls_sample<feat_t, n_feat>> & dataset, std::size_t i_feat){
     
     unsigned int num_grp = num_groups(dataset, i_feat);
     std::vector<unsigned int> grp_count(num_grp, 0);
@@ -121,7 +122,7 @@ std::vector<unsigned int> num_per_group(const std::vector<dt::cls_sample<feat_t,
     majority of labels
 */
 template <typename feat_t, std::size_t n_feat>
-std::tuple<std::size_t, float> majority_label(const std::vector<dt::cls_sample<feat_t, n_feat>> & dataset){
+std::tuple<std::size_t, float> majority_label(const std::vector<km::cls_sample<feat_t, n_feat>> & dataset){
     auto          npl      = num_per_label(dataset);
     std::size_t   ml_index = 0;
 
@@ -140,13 +141,13 @@ std::tuple<std::size_t, float> majority_label(const std::vector<dt::cls_sample<f
     get group as a separate dataset
 */
 template <typename feat_t, std::size_t n_feat>
-std::vector<dt::cls_sample<feat_t, n_feat>>
-get_group_as_ds(const std::vector<dt::cls_sample<feat_t, n_feat>> & dataset, std::size_t i_feat, std::size_t group){
+std::vector<km::cls_sample<feat_t, n_feat>>
+get_group_as_ds(const std::vector<km::cls_sample<feat_t, n_feat>> & dataset, std::size_t i_feat, std::size_t group){
     
-    std::vector<dt::cls_sample<feat_t, n_feat>> grp_ds;
+    std::vector<km::cls_sample<feat_t, n_feat>> grp_ds;
 
     std::copy_if(dataset.cbegin(), dataset.cend(), std::back_inserter(grp_ds),
-                [i_feat, group](const dt::cls_sample<feat_t, n_feat> & smpl){
+                [i_feat, group](const km::cls_sample<feat_t, n_feat> & smpl){
                     return smpl[i_feat] == group;
                 } );
 
@@ -158,7 +159,7 @@ get_group_as_ds(const std::vector<dt::cls_sample<feat_t, n_feat>> & dataset, std
     Shannon entropy of a dataset
 */
 template <typename feat_t, std::size_t n_feat>
-float dataset_entropy(std::vector<dt::cls_sample<feat_t, n_feat>> & dataset){
+float dataset_entropy(std::vector<km::cls_sample<feat_t, n_feat>> & dataset){
     
     float h = 0;
     float prob;
@@ -180,7 +181,7 @@ float dataset_entropy(std::vector<dt::cls_sample<feat_t, n_feat>> & dataset){
     Shannon entropy of a group
 */
 template <typename feat_t, std::size_t n_feat>
-float group_entropy(const std::vector<dt::cls_sample<feat_t, n_feat>> & dataset, std::size_t i_feat, std::size_t group){
+float group_entropy(const std::vector<km::cls_sample<feat_t, n_feat>> & dataset, std::size_t i_feat, std::size_t group){
     
     auto grp_ds = get_group_as_ds(dataset, i_feat, group);
 
@@ -194,7 +195,7 @@ float group_entropy(const std::vector<dt::cls_sample<feat_t, n_feat>> & dataset,
     Discriminative power of attribute i_feat
 */
 template <typename feat_t, std::size_t n_feat>
-float disc(const std::vector<dt::cls_sample<feat_t, n_feat>> & dataset, std::size_t i_feat){
+float disc(const std::vector<km::cls_sample<feat_t, n_feat>> & dataset, std::size_t i_feat){
     
     // UNNECESSARY ???
     // auto ds = sort_dataset(dataset, i_feat);
@@ -218,7 +219,7 @@ float disc(const std::vector<dt::cls_sample<feat_t, n_feat>> & dataset, std::siz
     get id of the feature with the highest discriminative power
 */
 template <typename feat_t, std::size_t n_feat>
-std::size_t get_best_feature(const std::vector<dt::cls_sample<feat_t, n_feat>>& dataset){
+std::size_t get_best_feature(const std::vector<km::cls_sample<feat_t, n_feat>>& dataset){
     
     std::size_t best_feat = 0;
     float       best_disc = 0;
@@ -238,7 +239,7 @@ std::size_t get_best_feature(const std::vector<dt::cls_sample<feat_t, n_feat>>& 
     (!) returns a sorted copy
 */
 template <typename feat_t, std::size_t n_feat>
-std::vector<dt::cls_sample<feat_t, n_feat>> sort_dataset(const std::vector<dt::cls_sample<feat_t, n_feat>>& dataset, std::size_t i){
+std::vector<km::cls_sample<feat_t, n_feat>> sort_dataset(const std::vector<km::cls_sample<feat_t, n_feat>>& dataset, std::size_t i){
 
     if(i >= n_feat)
         throw std::runtime_error("invalid attribute id");
@@ -246,7 +247,7 @@ std::vector<dt::cls_sample<feat_t, n_feat>> sort_dataset(const std::vector<dt::c
     auto ds = dataset;
 
     std::stable_sort(ds.begin(), ds.end(),
-                    [i](const dt::cls_sample<feat_t, n_feat> & a, const dt::cls_sample<feat_t, n_feat> & b) {
+                    [i](const km::cls_sample<feat_t, n_feat> & a, const km::cls_sample<feat_t, n_feat> & b) {
                         return a[i] < b[i];
                     });
 
@@ -259,7 +260,7 @@ std::vector<dt::cls_sample<feat_t, n_feat>> sort_dataset(const std::vector<dt::c
     (!) returns a discretized copy
 */
 template <typename feat_t, std::size_t n_feat>
-std::vector<dt::cls_sample<feat_t, n_feat>> discretize_dataset(const std::vector<dt::cls_sample<feat_t, n_feat>>& dataset, std::size_t n_groups){
+std::vector<km::cls_sample<feat_t, n_feat>> discretize_dataset(const std::vector<km::cls_sample<feat_t, n_feat>>& dataset, std::size_t n_groups){
 
     auto ds  = dataset;
     auto spg = ds.size() / n_groups;    // samples per group
@@ -282,9 +283,9 @@ std::vector<dt::cls_sample<feat_t, n_feat>> discretize_dataset(const std::vector
     make train/test split
 */
 template <typename feat_t, std::size_t n_feat>
-std::tuple<std::vector<dt::cls_sample<feat_t, n_feat>>,
-           std::vector<dt::cls_sample<feat_t, n_feat>>>
-split_dataset(const std::vector<dt::cls_sample<feat_t, n_feat>>& dataset, float ratio, bool shuffle = true){
+std::tuple<std::vector<km::cls_sample<feat_t, n_feat>>,
+           std::vector<km::cls_sample<feat_t, n_feat>>>
+split_dataset(const std::vector<km::cls_sample<feat_t, n_feat>>& dataset, float ratio, bool shuffle = true){
 
     auto ds = dataset;
 
@@ -300,4 +301,49 @@ split_dataset(const std::vector<dt::cls_sample<feat_t, n_feat>>& dataset, float 
     decltype(ds) test  {ds.cbegin() + index + 1, ds.cend()};
 
     return {train, test};
+}
+
+
+/*
+    distance between two samples
+*/
+template <typename feat_t, std::size_t n_feat>
+float euclidean_dist(const km::cls_sample<feat_t, n_feat> & s1, const km::cls_sample<feat_t, n_feat> & s2){
+
+    float dist = 0;
+
+    for(int f = 0; f < n_feat; ++f)
+        dist += (float) (s1[f] - s2[f]) * (s1[f] - s2[f]);
+
+    return sqrt(dist);
+}
+
+
+/*
+    distance between two samples
+*/
+template <typename feat_t, std::size_t n_feat>
+float euclidean_dist(const km::cls_sample<feat_t, n_feat> & s1, const std::vector<float> & s2){
+
+    float dist = 0;
+
+    for(int f = 0; f < n_feat; ++f)
+        dist += (float) (s1[f] - s2[f]) * (s1[f] - s2[f]);
+
+    return sqrt(dist);
+}
+
+
+/*
+    distance between two samples
+*/
+template <typename feat_t, std::size_t n_feat>
+float euclidean_dist(const std::vector<float> & s2, const km::cls_sample<feat_t, n_feat> & s1){
+
+    float dist = 0;
+
+    for(int f = 0; f < n_feat; ++f)
+        dist += (float) (s1[f] - s2[f]) * (s1[f] - s2[f]);
+
+    return sqrt(dist);
 }
