@@ -16,17 +16,17 @@ struct k_means{
 
 private:
 
-    int                               k;            // number of clusters
+    int                                k;            // number of clusters
 
-    std::vector<std::vector<float>>   centroids;    // centroids
+    std::vector<std::vector<double>>   centroids;    // centroids
 
-    int                               max_iter;     // maximum number of iterations
+    int                                max_iter;     // maximum number of iterations
 
-    float                             delta;        // max diff of centroid between iterations
+    double                             delta;        // max diff of centroid between iterations
 
-    float                             min_delta;    // stopping condition
+    double                             min_delta;    // stopping condition
 
-    std::string                       init_method;  // "random" or "kmeans++"
+    std::string                        init_method;  // "random" or "kmeans++"
 
 
 
@@ -36,9 +36,9 @@ private:
     template <typename feat_t, std::size_t n_feat>    
     std::size_t closest_centroid(const cls_sample<feat_t, n_feat> & p){
 
-        std::size_t  closest;
-        float        cl_dist = std::numeric_limits<float>::infinity();
-        float        tmp_dist;
+        std::size_t   closest;
+        double        cl_dist = std::numeric_limits<double>::infinity();
+        double        tmp_dist;
 
         for(std::size_t cl = 0; cl < centroids.size(); ++cl){
             if((tmp_dist = euclidean_dist(p, centroids[cl])) < cl_dist){
@@ -80,15 +80,23 @@ private:
             max_count     = 0;
             best_gt_label = 0;
             for(int gt_label = 0; gt_label < k; ++gt_label){
+                
                 cooc = get_cooccurence(gt, pred, gt_label, pred_label);
+                
                 if(cooc > max_count){
                     max_count = cooc;
                     best_gt_label = gt_label;
                 }
+                
+                std::cout << cooc << " ";
             }
+
+            std::cout << std::endl;
 
             match[pred_label] = best_gt_label;
         }
+
+        std::cout << "match: " << match << std::endl;
 
         return match;
     }
@@ -102,7 +110,7 @@ public:
         max_iter:        maximum number of iterations (-1 = unlimited)
         init_method:     initialization method ("k++", "random")
     */
-    k_means(int k, int max_iter = 10000, float min_delta = 0.001, std::string init_method = "kmeans++")
+    k_means(int k, int max_iter = 10000, double min_delta = 0.001, std::string init_method = "kmeans++")
         :   k           {k},
             max_iter    {max_iter},
             delta       {min_delta + 1},
@@ -132,10 +140,10 @@ public:
         if(init_method == "kmeans++"){
             
             // first centroid - randomly chosen
-            auto                c_idx          = uni(rng);
-            float               cdf            = 0;            // cumulative distribution
-            std::vector<float>  weights(dataset.size(), 0);    // D^2 weights
-            float               sum_dist       = 0;            // sum of distances to closest centroid
+            auto                 c_idx          = uni(rng);
+            double               cdf            = 0;            // cumulative distribution
+            std::vector<double>  weights(dataset.size(), 0);    // D^2 weights
+            double               sum_dist       = 0;            // sum of distances to closest centroid
 
             // add first centroid
             centroids.emplace_back();
@@ -149,7 +157,7 @@ public:
             for(int c = 0; c < k-1; ++c){
 
                 // generate random number (used with cdf to choose centroids according to weights)
-                float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+                double r = static_cast <double> (rand()) / static_cast <double> (RAND_MAX);
 
                 // calculate distances to closest centroid for all data points and their sum
                 for(c_idx = 0; c_idx < dataset.size(); ++c_idx){
@@ -208,22 +216,22 @@ public:
 
 
         int iter = 0;
-        std::vector<std::size_t>  assigned_clusters(dataset.size(), 0);
-        std::array<float, n_feat> mean;
-        int                       n_points = 0;
-        float                     cur_delta;
-        float                     max_delta;
+        std::vector<std::size_t>   assigned_clusters(dataset.size(), 0);
+        std::array<double, n_feat> mean;
+        int                        n_points = 0;
+        double                     cur_delta;
+        double                     max_delta;
 
         for(; (max_iter == -1 || iter < max_iter) && delta > min_delta; ++iter){
 
             max_delta = 0;
 
-            if(iter % 10 == 0){
-                std::cout << "iter " << iter << " - delta: " << delta << std::endl;
-                for(int ci = 0; ci < centroids.size(); ++ci)
-                    std::cout << centroids[ci] << std::endl;
-                std::cout << std::endl;
-            }
+            // if(iter % 5 == 0){
+            //     std::cout << "iter " << iter << " - delta: " << delta << std::endl;
+            //     for(int ci = 0; ci < centroids.size(); ++ci)
+            //         std::cout << centroids[ci] << std::endl;
+            //     std::cout << std::endl;
+            // }
 
             // calculate which cluster each point belongs to
             for(int s_idx = 0; s_idx < dataset.size(); ++s_idx){
@@ -234,6 +242,7 @@ public:
             for(auto ki = 0; ki < k; ++ki){
                 mean = {0};
                 cur_delta = 0;
+                n_points = 0;
 
                 for(auto si = 0; si < dataset.size(); ++si){
 
@@ -309,6 +318,7 @@ public:
 
         // get best match
         auto bm = get_match(gt, pred);
+        set_cluster_ids(bm);
 
         // evaluate
         gt.clear();
@@ -329,7 +339,7 @@ public:
     /*
         get cluster centroids
     */
-    std::vector<std::vector<float>> get_centroids(){
+    std::vector<std::vector<double>> get_centroids(){
         return centroids;
     }
 

@@ -308,12 +308,12 @@ split_dataset(const std::vector<km::cls_sample<feat_t, n_feat>>& dataset, float 
     distance between two samples
 */
 template <typename feat_t, std::size_t n_feat>
-float euclidean_dist(const km::cls_sample<feat_t, n_feat> & s1, const km::cls_sample<feat_t, n_feat> & s2){
+double euclidean_dist(const km::cls_sample<feat_t, n_feat> & s1, const km::cls_sample<feat_t, n_feat> & s2){
 
-    float dist = 0;
+    double dist = 0;
 
     for(int f = 0; f < n_feat; ++f)
-        dist += (float) (s1[f] - s2[f]) * (s1[f] - s2[f]);
+        dist += (double) (s1[f] - s2[f]) * (s1[f] - s2[f]);
 
     return sqrt(dist);
 }
@@ -323,12 +323,12 @@ float euclidean_dist(const km::cls_sample<feat_t, n_feat> & s1, const km::cls_sa
     distance between two samples
 */
 template <typename feat_t, std::size_t n_feat>
-float euclidean_dist(const km::cls_sample<feat_t, n_feat> & s1, const std::vector<float> & s2){
+double euclidean_dist(const km::cls_sample<feat_t, n_feat> & s1, const std::vector<double> & s2){
 
-    float dist = 0;
+    double dist = 0;
 
     for(int f = 0; f < n_feat; ++f)
-        dist += (float) (s1[f] - s2[f]) * (s1[f] - s2[f]);
+        dist += (double) (s1[f] - s2[f]) * (s1[f] - s2[f]);
 
     return sqrt(dist);
 }
@@ -338,12 +338,12 @@ float euclidean_dist(const km::cls_sample<feat_t, n_feat> & s1, const std::vecto
     distance between two samples
 */
 template <typename feat_t, std::size_t n_feat>
-float euclidean_dist(const std::vector<float> & s1, const km::cls_sample<feat_t, n_feat> & s2){
+double euclidean_dist(const std::vector<double> & s1, const km::cls_sample<feat_t, n_feat> & s2){
 
-    float dist = 0;
+    double dist = 0;
 
     for(int f = 0; f < n_feat; ++f)
-        dist += (float) (s1[f] - s2[f]) * (s1[f] - s2[f]);
+        dist += (double) (s1[f] - s2[f]) * (s1[f] - s2[f]);
 
     return sqrt(dist);
 }
@@ -352,12 +352,12 @@ float euclidean_dist(const std::vector<float> & s1, const km::cls_sample<feat_t,
 /*
     distance between two samples
 */
-float euclidean_dist(const std::vector<float> & s1, const std::vector<float> & s2){
+double euclidean_dist(const std::vector<double> & s1, const std::vector<double> & s2){
 
-    float dist = 0;
+    double dist = 0;
 
     for(int f = 0; f < s1.size(); ++f)
-        dist += (float) (s1[f] - s2[f]) * (s1[f] - s2[f]);
+        dist += (double) (s1[f] - s2[f]) * (s1[f] - s2[f]);
 
     return sqrt(dist);
 }
