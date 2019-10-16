@@ -4,15 +4,15 @@
 #include <chrono>
 
 #include "parser.hpp"
-#include "dtree.hpp"
+#include "k_means.hpp"
 
 #define N_ARGS      1
 #define N_FEATURES  4
-#define N_GROUPS    3
+#define N_CLUSTERS  3
 
 
 using namespace std;
-using namespace dt;
+using namespace km;
 
 
 int main(int argc, char * argv[]){
@@ -42,32 +42,25 @@ int main(int argc, char * argv[]){
     cout << "parsed " << dataset.size() << " samples in " << fixed << setprecision(2) << seconds << " s " << millis << " ms" << endl;
     cout << endl;
 
-    // group the features
-    auto ds = discretize_dataset(dataset, N_GROUPS);
 
-    // split dataset into training and testing
-    auto [train_ds, test_ds] = split_dataset(ds, 0.39, true);
+    // fit K-Means
 
-    cout << "training samples: " << train_ds.size() << endl;
-    cout << "test samples:     " << test_ds.size() << endl;
-    cout << endl;
-
-    // build decision tree
-    decision_tree tree(2, 2);
+    k_means km(N_CLUSTERS, 100);
 
     t1 = std::chrono::high_resolution_clock::now();
 
-    tree.fit(train_ds);
+    auto iterations = km.fit(dataset);
 
     t2 = std::chrono::high_resolution_clock::now();
     duration = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count();
     seconds = (int) std::round(duration / 1000000);
     millis  = (float) (duration % 1000000) / 1000;
 
-    cout << "fit on " << train_ds.size() << " samples in " << fixed << setprecision(2) << seconds << " s " << millis << " ms" << endl;
+    cout << "fit on " << dataset.size() << " samples in " << iterations << " iterations (" <<
+            fixed << setprecision(2) << seconds << " s " << millis << " ms" << ")" << endl;
     cout << endl;
 
-    tree.evaluate(test_ds);
+    km.evaluate(dataset);
 
     return 0;
 }
