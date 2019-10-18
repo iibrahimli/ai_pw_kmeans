@@ -88,15 +88,15 @@ private:
                     best_gt_label = gt_label;
                 }
                 
-                std::cout << cooc << " ";
+                // std::cout << cooc << " ";
             }
 
-            std::cout << std::endl;
+            // std::cout << std::endl;
 
             match[pred_label] = best_gt_label;
         }
 
-        std::cout << "match: " << match << std::endl;
+        // std::cout << "match: " << match << std::endl;
 
         return match;
     }
@@ -282,10 +282,14 @@ public:
         ex: k=3, [2, 0, 1]
     */
     void set_cluster_ids(std::vector<std::size_t> order){
-        // std::iter_swap(begin + n, begin + k)
+
+        std::vector<std::vector<double>> new_centroids;  
+
         for(int i = 0; i < order.size(); ++i){
-            std::iter_swap(centroids.begin() + i, centroids.begin() + order[i]);
+            new_centroids.emplace_back(centroids[order[i]]);
+            // std::iter_swap(centroids.begin() + i, centroids.begin() + order[i]);
         }
+        centroids = new_centroids;
     }
     
     
