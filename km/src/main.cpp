@@ -45,7 +45,7 @@ int main(int argc, char * argv[]){
 
     // fit K-Means
 
-    k_means km(N_CLUSTERS, -1, 1e-6);
+    k_means km(N_CLUSTERS, -1, 1e-7);
 
     t1 = std::chrono::high_resolution_clock::now();
 
@@ -60,12 +60,12 @@ int main(int argc, char * argv[]){
             fixed << setprecision(2) << seconds << " s " << millis << " ms" << ")" << endl;
     cout << endl;
 
+    km.evaluate(dataset);
+
     auto centroids = km.get_centroids();
+    cout << endl << "centroids:" << endl;
     for(int c = 0; c < centroids.size(); ++c)
         cout << centroids[c] << endl;
-    cout << endl;
-
-    km.evaluate(dataset);
 
     return 0;
 }
